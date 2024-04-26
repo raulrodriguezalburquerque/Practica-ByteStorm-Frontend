@@ -45,7 +45,7 @@
             // Funcion para comprobar el tamaño de pantalla y decidir que tipo de navegacion usar
             comprobarTamañoPantalla() {
                 this.toolBarView = window.innerWidth >= 760;
-            }
+            },
         },
         created: function() {
             // Comprobamos el tamaño de pantalla

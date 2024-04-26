@@ -109,12 +109,21 @@
 </template>
 
 <script>
-  import axios from "axios";
+  import { useMisionesStore } from "@/stores/misiones";
+  import { useOperativosStore } from "@/stores/operativos";
+  import { useEquiposStore } from "@/stores/equipos";
 
   export default {
     name: 'ListaMisiones',
   
     data: () => ({
+      // Store para las misiones
+      storeMisiones: useMisionesStore(),
+      // Store para los operativos
+      storeOperativos: useOperativosStore(),
+      // Store para los equipos
+      storeEquipos: useEquiposStore(),
+
       // Lista de equipos disponibles
       equiposDisponibles: [],
 
@@ -163,25 +172,18 @@
       },
       // Funcion asincrona para conseguir las misiones
       async getMisiones() {
-        // Hacemos la llamada HTTP GET para obtener la lista de misiones
-        await axios.get("https://localhost:7057/api/Misiones")
-          .then(response => { console.log(response);
-          // Actualizamos la lista de misiones con la respuesta obtenida
-          this.listaMisiones = response.data;
-        })
+        // Hacemos que la store obtenga las misiones
+        await this.storeMisiones.getMisiones();
+        // Obtenemos las misiones de la store
+        this.listaMisiones = this.storeMisiones.misiones;
       },
       // Funcion asincrona para añadir una mision a la lista
       async addMision() {
         const { valid } = await this.$refs.formularioAñadir.validate();
         if(valid) {
-          // Hacemos la llamada HTTP POST creando la nueva mision
-          await axios.post("https://localhost:7057/api/Misiones", {
-            descripcion: this.descripcionAñadir,
-            estado: "Planificada",
-            operativoDTO: this.operativoSeleccionadoAñadir,
-            equiposDTO: this.equiposSeleccionadosAñadir
-          }).then(response => { console.log(response); })
-          .catch(error => { console.log(error); });
+          // Hacemos que la store añada la nueva mision
+          await this.storeMisiones.addMision(this.descripcionAñadir, this.operativoSeleccionadoAñadir,
+           this.equiposSeleccionadosAñadir);
           // Conseguimos la lista de misiones actualizada y de equipos disponibles
           this.getMisiones();
           this.getEquiposDisponibles();
@@ -193,17 +195,9 @@
       async updateMision() {
         const { valid } = await this.$refs.formularioEditar.validate();
         if(valid) {
-          // Obtenemos el codigo de la mision
-          var code = this.misionEditar.codigo;
-          // Hacemos la llamada HTTP PUT para actualizar la mision
-          await axios.put("https://localhost:7057/api/Misiones/"+code, {
-            codigo: code,
-            descripcion: this.descripcionEditar,
-            estado: this.misionEditar.estado,
-            operativoDTO: this.operativoSeleccionadoEditar,
-            equiposDTO: this.equiposSeleccionadosEditar
-          }).then(response => { console.log(response); })
-          .catch(error => { console.log(error); });
+          // Hacemos que la store actualice la mision
+          await this.storeMisiones.updateMision(this.misionEditar, this.descripcionEditar, 
+            this.operativoSeleccionadoEditar, this.equiposSeleccionadosEditar);
           // Conseguimos la lista de misiones y equipos disponibles actualizadas
           this.getMisiones();
           this.getEquiposDisponibles();
@@ -213,12 +207,8 @@
       },
       // Funcion asincrona para eliminar una mision de la lista
       async removeMision(mision) {
-        // Obtenemos el codigo de la mision
-        var code = mision.codigo;
-        // Hacemos la llamada HTTP DELETE para eliminar la mision
-        await axios.delete("https://localhost:7057/api/Misiones/"+code)
-          .then(response => { console.log(response); })
-          .catch(error => { console.log(error); });
+        // Hacemos que la store elimine la mision
+        await this.storeMisiones.removeMision(mision);
         // Conseguimos la lista de misiones y equipos disponibles actualizadas
         this.getMisiones();
         this.getEquiposDisponibles();
@@ -226,21 +216,17 @@
       // Funcion asincrona para obtener los equipos disponibles
       async getEquiposDisponibles()
       {
-        // Hacemos la llamada HTTP GET para obtener la lista de equipos disponibles
-        await axios.get("https://localhost:7057/api/Equipos/Disponibles")
-          .then(response => { console.log(response);
-          // Actualizamos la lista de equipos disponibles con la respuesta obtenida
-          this.equiposDisponibles = response.data;
-        })
+        // Hacemos que la store de equipos obtenga los equipos disponibles
+        await this.storeEquipos.getEquiposDisponibles();
+        // Obtenemos los equipos de la store
+        this.equiposDisponibles = this.store.equiposDisponibles;
       },
       // Funcion asincrona para conseguir los operativos
       async getOperativos() {
-        // Hacemos la llamada HTTP GET para obtener la lista de operativos
-        await axios.get("https://localhost:7057/api/Operativos")
-          .then(response => { console.log(response);
-          // Actualizamos la lista de operativos con la respuesta obtenida
-          this.listaOperativos = response.data;
-        })
+        // Hacemos que la store de operativos obtenga los operativos
+        await this.storeOperativos.getOperativos();
+        // Obtenemos los operativos de la store
+        this.listaOperativos = this.storeOperativos.operativosDisponibles;
       }
     },
 

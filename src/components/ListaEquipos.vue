@@ -77,12 +77,15 @@
 </template>
 
 <script>
-  import axios from "axios";
+  import { useEquiposStore } from "@/stores/equipos";
 
   export default {
     name: 'ListaEquipos',
   
     data: () => ({
+      // Store para los equipos
+      store: useEquiposStore(),
+
       // Lista de equipos
       listaEquipos: [],
       // Opciones dentro del menu de cada equipo
@@ -118,25 +121,18 @@
       },
       // Funcion asincrona para conseguir los equipos
       async getEquipos() {
-        // Hacemos la llamada HTTP GET para obtener la lista de equipos
-        await axios.get("https://localhost:7057/api/Equipos")
-          .then(response => { console.log(response);
-          // Actualizamos la lista de equipos con la respuesta obtenida
-          this.listaEquipos = response.data;
-        })
+        // Hacemos que la store de equipos obtenga los equipos
+        await this.store.getEquipos();
+        // Obtenemos los equipos de la store
+        this.listaEquipos = this.store.equipos;
       },
       // Funcion asincrona para añadir un equipo a la lista
       async addEquipo() {
         // Comprobamos si el formulario de añadir equipo se ha rellenado correctamente
         const { valid } = await this.$refs.formularioAñadir.validate();
         if(valid) {
-          // Hacemos la llamada HTTP POST creando el nuevo equipo
-          await axios.post("https://localhost:7057/api/Equipos", {
-            tipo: this.tipoElegidoAñadir,
-            descripcion: this.descripcionAñadir,
-            estado: "Disponible"
-          }).then(response => { console.log(response); })
-          .catch(error => { console.log(error); });
+          // Hacemos que la store de equipos añada el nuevo equipo
+          await this.store.addEquipo(this.tipoElegidoAñadir, this.descripcionAñadir);
           // Conseguimos la lista de equipos actualizada
           this.getEquipos();
           // Reseteamos el formulario
@@ -148,16 +144,8 @@
         // Comprobamos si el formulario de editar equipo se ha rellenado correctamente
         const { valid } = await this.$refs.formularioEditar.validate();
         if(valid) {
-          // Obtenemos el ID del equipo
-          var id = this.equipoEditar.id;
-          // Hacemos la llamada HTTP PUT para actualizar el equipo
-          await axios.put("https://localhost:7057/api/Equipos/"+id, {
-            ID: id,
-            tipo: this.tipoElegidoEditar,
-            descripcion: this.descripcionEditar,
-            estado: this.equipoEditar.estado
-          }).then(response => { console.log(response); })
-          .catch(error => { console.log(error); });
+          // Hacemos que la store de equipos actualice el equipo
+          await this.store.updateEquipo(this.equipoEditar, this.tipoElegidoEditar, this.descripcionEditar);
           // Conseguimos la lista de equipos actualizada
           this.getEquipos();
           // Se oculta el menu de edicion de equipo
@@ -166,12 +154,8 @@
       },
       // Funcion asincrona para eliminar un equipo de la lista
       async removeEquipo(equipo) {
-        // Obtenemos el id del equipo
-        var id = equipo.id;
-        // Hacemos la llamada HTTP DELETE para eliminar el equipo
-        await axios.delete("https://localhost:7057/api/Equipos/"+id)
-          .then(response => { console.log(response); })
-          .catch(error => { console.log(error); });
+        // Hacemos que la store de equipos elimine el equipo
+        await this.store.removeEquipo(equipo);
         // Conseguimos la lista de equipos actualizada
         this.getEquipos();
       }

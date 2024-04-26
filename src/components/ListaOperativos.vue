@@ -96,12 +96,18 @@
 </template>
 
 <script>
-  import axios from "axios";
+  import { useOperativosStore } from "@/stores/operativos";
+  import { useMisionesStore } from "@/stores/misiones";
 
   export default {
     name: 'ListaOperativos',
   
     data: () => ({
+      // Store para los operativos
+      storeOperativos: useOperativosStore(),
+      // Store para las misiones
+      storeMisiones: useMisionesStore(),
+
       // Lista de misiones planificadas
       misionesPlanificadas: [],
 
@@ -145,25 +151,19 @@
       },
       // Funcion asincrona para conseguir los operativos
       async getOperativos() {
-        // Hacemos la llamada HTTP GET para obtener la lista de operativos
-        await axios.get("https://localhost:7057/api/Operativos")
-          .then(response => { console.log(response);
-          // Actualizamos la lista de operativos con la respuesta obtenida
-          this.listaOperativos = response.data;
-        })
+        // Hacemos que la store obtenga los operativos
+        await this.storeOperativos.getOperativos();
+        // Obtenemos los operativos de la store
+        this.listaOperativos = this.storeOperativos.operativos;
       },
       // Funcion asincrona para añadir un operativo a la lista
       async addOperativo() {
         // Comprobamos si el formulario de añadir operativo se ha rellenado correctamente
         const { valid } = await this.$refs.formularioAñadir.validate();
         if(valid) {
-          // Hacemos la llamada HTTP POST creando el nuevo operativo
-          await axios.post("https://localhost:7057/api/Operativos", {
-            nombre: this.nombreAñadir,
-            rol: this.rolAñadir,
-            misionesDTO: this.misionesSeleccionadasAñadir
-          }).then(response => { console.log(response); })
-          .catch(error => { console.log(error); });
+          // Hacemos que la store añada la nueva mision
+          await this.storeOperativos.addOperativo(this.nombreAñadir, this.rolAñadir,
+            this.misionesSeleccionadasAñadir);
           // Conseguimos la lista de operativos actualizada y de misiones planificadas
           this.getOperativos();
           this.getMisionesPlanificadas();
@@ -176,16 +176,9 @@
         // Comprobamos si el formulario de editar equipo se ha rellenado correctamente
         const { valid } = await this.$refs.formularioEditar.validate();
         if(valid) {
-          // Obtenemos el ID del operativo
-          var id = this.operativoEditar.id;
-          // Hacemos la llamada HTTP PUT para actualizar el operativo
-          await axios.put("https://localhost:7057/api/Operativos/"+id, {
-            ID: id,
-            nombre: this.nombreEditar,
-            rol: this.rolEditar,
-            misionesDTO: this.misionesSeleccionadasEditar
-          }).then(response => { console.log(response); })
-          .catch(error => { console.log(error); });
+          // Hacemos que la store actualice el operativo
+          await this.storeOperativos.updateOperativo(this.operativoEditar, this.nombreEditar, 
+            this.rolEditar,this.misionesSeleccionadasEditar);
           // Conseguimos la lista de operativos y misiones planificadas actualizada
           this.getOperativos();
           this.getMisionesPlanificadas();
@@ -195,12 +188,8 @@
       },
       // Funcion asincrona para eliminar un operativo de la lista
       async removeOperativo(operativo) {
-        // Obtenemos el id del operativo
-        var id = operativo.id;
-        // Hacemos la llamada HTTP DELETE para eliminar el operativo
-        await axios.delete("https://localhost:7057/api/Operativos/"+id)
-          .then(response => { console.log(response); })
-          .catch(error => { console.log(error); });
+        // Hacemos que la store elimine la mision
+        await this.storeOperativos.removeOperativo(operativo);
         // Conseguimos la lista de operativos y misiones planificadas actualizada
         this.getOperativos();
         this.getMisionesPlanificadas();
@@ -208,12 +197,10 @@
       // Funcion asincrona para obtener las misiones planificadas
       async getMisionesPlanificadas()
       {
-        // Hacemos la llamada HTTP GET para obtener la lista de misiones planificadas
-        await axios.get("https://localhost:7057/api/Misiones/Planificadas")
-          .then(response => { console.log(response);
-          // Actualizamos la lista de misiones planificadas con la respuesta obtenida
-          this.misionesPlanificadas = response.data;
-        })
+        // Hacemos que la store obtenga las misiones planificadas
+        await this.storeMisiones.getMisionesPlanificadas();
+        // Obtenemos las misiones de la store
+        this.misionesPlanificadas = this.storeMisiones.misionesPlanificadas;
       }
     },
 
