@@ -4,6 +4,8 @@ import axios from "axios";
 export const useOperativosStore = defineStore('operativos', {
     // Datos de la store
     state: () => ({
+        // Operativo concreto buscado
+        operativo: null,
         // Lista de operativos
         operativos: []
     }),
@@ -16,6 +18,15 @@ export const useOperativosStore = defineStore('operativos', {
                 .then(response => { console.log(response);
                 // Actualizamos la lista de operativos con la respuesta obtenida
                 this.operativos = response.data;
+            })
+        },
+        // Funcion asincrona para conseguir un operativo segun el ID
+        async getOperativo(id) {
+            // Hacemos la llamada HTTP GET para obtener el operativo
+            await axios.get("https://localhost:7057/api/Operativos/"+id)
+                .then(response => { console.log(response);
+                // Actualizamos el operativo con la respuesta obtenida
+                this.operativo = response.data;
             })
         },
         // Funcion asincrona para añadir un operativo a la lista

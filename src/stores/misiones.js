@@ -4,6 +4,8 @@ import axios from "axios";
 export const useMisionesStore = defineStore('misiones', {
     // Datos de la store
     state: () => ({
+        // Mision concreta buscada
+        mision: null,
         // Lista de misiones
         misiones: [],
         // Lista de misiones planificadas
@@ -18,6 +20,15 @@ export const useMisionesStore = defineStore('misiones', {
                 .then(response => { console.log(response); 
                 // Actualizamos la lista de misiones con la respuesta obtenida
                 this.misiones = response.data;
+            })
+        },
+        // Funcion asincrona para conseguir una mision segun el codigo
+        async getMision(codigo) {
+            // Hacemos la llamada HTTP GET para obtener la mision
+            await axios.get("https://localhost:7057/api/Misiones/"+codigo)
+                .then(response => { console.log(response);
+                // Actualizamos la mision con la respuesta obtenida
+                this.mision = response.data;
             })
         },
         // Funcion asincrona para obtener las misiones planificadas

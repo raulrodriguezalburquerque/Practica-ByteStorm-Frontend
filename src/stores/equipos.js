@@ -4,6 +4,8 @@ import axios from "axios";
 export const useEquiposStore = defineStore('equipos', {
     // Datos de la store
     state: () => ({
+        // Equipo concreto buscado
+        equipo: null,
         // Lista de equipos
         equipos: [],
         // Lista de equipos disponibles
@@ -18,6 +20,15 @@ export const useEquiposStore = defineStore('equipos', {
                 .then(response => { console.log(response);
                 // Actualizamos la lista de equipos con la respuesta obtenida
                 this.equipos = response.data;
+            })
+        },
+        // Funcion asincrona para conseguir un equipo segun el ID
+        async getEquipo(id) {
+            // Hacemos la llamada HTTP GET para obtener el equipo
+            await axios.get("https://localhost:7057/api/Equipos/"+id)
+                .then(response => { console.log(response);
+                // Actualizamos el equipo con la respuesta obtenida
+                this.equipo = response.data;
             })
         },
         // Funcion asincrona para obtener los equipos disponibles

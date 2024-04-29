@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ListaMisiones from '@/components/ListaMisiones.vue';
+import ListaMisiones from '@/components/listas/ListaMisiones.vue';
 
 export default {
   name: 'MisionesView',
