@@ -70,7 +70,7 @@
       </v-col>
       <!-- Formulario para añadir una nueva mision -->
       <v-col cols="12" sm="6" md="4" lg="3">
-        <AñadirMision ref="añadir" @mision-añadida="getMisiones" />
+        <AñadirMision />
       </v-col>
       <!-- Formulario para editar una mision, solo se muestra si "editar" es verdadero -->
       <v-dialog v-model="editar">
@@ -82,8 +82,8 @@
 </template>
 
 <script>
-  import AñadirMision from "../formularios/AñadirMision.vue";
-  import EditarMision from "../formularios/EditarMision.vue";
+  import AñadirMision from "./AñadirMision.vue";
+  import EditarMision from "./EditarMision.vue";
   import { useMisionesStore } from "@/stores/misiones";
   import { useOperativosStore } from "@/stores/operativos";
   import { useEquiposStore } from "@/stores/equipos";
@@ -101,9 +101,6 @@
       storeMisiones: useMisionesStore(),
       storeOperativos: useOperativosStore(),
       storeEquipos: useEquiposStore(),
-
-      // Lista de misiones
-      listaMisiones: [],
 
       // Booleano para abrir el menu de editar mision
       editar: false,
@@ -128,45 +125,29 @@
         // Llenamos el formulario de editar mision
         this.$refs.editar.rellenarFormularioEdicion();
       },
-      // Funcion asincrona para conseguir las misiones
-      async getMisiones() {
-        // Hacemos que la store obtenga las misiones
-        await this.storeMisiones.getMisiones();
-        // Obtenemos las misiones de la store
-        this.listaMisiones = this.storeMisiones.misiones;
-      },
       // Funcion para actualizar el componente despues de actualizar una mision
       misionActualizada() {
-        // Conseguimos la lista de misiones actualizada
-        this.getMisiones();
         // Se oculta el menu de edicion de mision
         this.editar = false;
-        // Llamamos al formulario de añadir mision para que actualice la lista de equipos disponibles
-        this.$refs.añadir.getEquiposDisponibles();
       },
       // Funcion asincrona para completar una mision de la lista
       async completarMision(mision) {
         // Hacemos que la store de por completada la mision
         await this.storeMisiones.completarMision(mision);
-        // Conseguimos la lista de misiones actualizada
-        this.getMisiones();
-        // Llamamos al formulario de añadir mision para que actualice la lista de equipos disponibles
-        this.$refs.añadir.getEquiposDisponibles();
       },
       // Funcion asincrona para eliminar una mision de la lista
       async removeMision(mision) {
         // Hacemos que la store elimine la mision
         await this.storeMisiones.removeMision(mision);
-        // Conseguimos la lista de misiones actualizada
-        this.getMisiones();
-        // Llamamos al formulario de añadir mision para que actualice la lista de equipos disponibles
-        this.$refs.añadir.getEquiposDisponibles();
       }
     },
 
-    created: function() {
-      // Obtenemos la lista de misiones
-      this.getMisiones();
+    computed: {
+      // Lista con las misiones
+      listaMisiones() {
+        // Obtenemos las misiones de la store
+        return this.storeMisiones.getterMisiones;
+      }
     }
   }
 </script>

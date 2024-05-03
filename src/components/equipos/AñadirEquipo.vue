@@ -40,8 +40,6 @@
                 if(valid) {
                     // La store de equipos añade el nuevo equipo
                     await this.store.addEquipo(this.tipo, this.descripcion);
-                    // Emitimos un evento para que el componente padre se actualice
-                    this.$emit('equipo-añadido');
                     // Reseteamos el formulario
                     this.$refs.formularioAñadir.reset();
                 }

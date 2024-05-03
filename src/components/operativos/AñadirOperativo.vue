@@ -29,9 +29,6 @@
             storeOperativos: useOperativosStore(),
             storeMisiones: useMisionesStore(),
 
-            // Lista de misiones planificadas
-            misionesPlanificadas: [],
-
             // Nombre, rol y misiones seleccionadas dentro del formulario
             nombre: '',
             rol: '',
@@ -46,31 +43,24 @@
                 if(valid) {
                     // Hacemos que la store de operativos añada el nuevo operativo
                     await this.storeOperativos.addOperativo(this.nombre, this.rol, this.misionesSeleccionadas);
-                    // Conseguimos la lista de misiones planificadas actualizada
-                    this.getMisionesPlanificadas();
                     // Reseteamos el formulario
                     this.$refs.formularioAñadir.reset();
-                    // Emitimos un evento para que el componente padre se actualice
-                    this.$emit('operativo-añadido');
                 }
             },
-            // Funcion asincrona para obtener las misiones planificadas
-            async getMisionesPlanificadas()
-            {
-                // Hacemos que la store obtenga las misiones planificadas
-                await this.storeMisiones.getMisionesPlanificadas();
-                // Obtenemos las misiones de la store
-                this.misionesPlanificadas = this.storeMisiones.misionesPlanificadas;
-            },
+            // Funcion para conseguir el codigo de una mision
             getCodigo(mision)
             {
                 return mision.codigo;
             }
         },
 
-        created: function() {
-            // Obtenemos la lista de misiones planificadas
-            this.getMisionesPlanificadas();
+        computed: {
+            // Lista con las misiones planificadas
+            misionesPlanificadas() {
+                // Obtenemos las misiones planificadas de la store
+                return this.storeMisiones.getterMisionesPlanificadas;
+            }
         }
+        
     }
 </script>

@@ -1,6 +1,6 @@
 <template>
     <!-- Cuadro con el formulario -->
-    <v-sheet :elevation="5" style="max-width: 50%; margin-left: 25%;">
+    <v-sheet :elevation="5" style="max-width: 75%; margin-left: 12.5%;">
         <v-form ref="formularioEditar">
             <!-- Campo para seleccionar tipo -->
             <v-select v-model=tipo label="Tipo" :items=tiposSeleccionables required
@@ -38,7 +38,7 @@
             // Funcion para rellenar el formulario de edicion con los datos del equipo
             rellenarFormularioEdicion() {
                 // Obtenemos el equipo que queremos editar
-                this.equipo = this.store.equipo;
+                this.equipo = this.store.getterEquipo;
                 // Cambiamos el valor de tipo y descripcion del menu al del equipo
                 this.tipo = this.equipo.tipo;
                 this.descripcion = this.equipo.descripcion;

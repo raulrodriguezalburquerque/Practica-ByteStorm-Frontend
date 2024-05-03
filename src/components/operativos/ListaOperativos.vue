@@ -54,7 +54,7 @@
       </v-col>
       <!-- Formulario para añadir un nuevo operativo -->
       <v-col cols="12" sm="6" md="4" lg="3">
-        <AñadirOperativo ref="añadir" @operativo-añadido="getOperativos" />
+        <AñadirOperativo />
       </v-col>
       <!-- Formulario para editar un operativo, solo se muestra si "editar" es verdadero -->
       <v-dialog v-model="editar">
@@ -66,8 +66,8 @@
 </template>
 
 <script>
-  import AñadirOperativo from "../formularios/AñadirOperativo.vue";
-  import EditarOperativo from "../formularios/EditarOperativo.vue";
+  import AñadirOperativo from "./AñadirOperativo.vue";
+  import EditarOperativo from "./EditarOperativo.vue";
   import { useOperativosStore } from "@/stores/operativos";
   import { useMisionesStore } from "@/stores/misiones";
 
@@ -83,9 +83,6 @@
       // Stores para los operativos y misiones
       storeOperativos: useOperativosStore(),
       storeMisiones: useMisionesStore(),
-
-      // Lista de operativos
-      listaOperativos: [],
 
       // Booleano para abrir el menu de editar operativo
       editar: false,
@@ -110,36 +107,24 @@
         // Llenamos el formulario de editar operativo
         this.$refs.editar.rellenarFormularioEdicion();
       },
-      // Funcion asincrona para conseguir los operativos
-      async getOperativos() {
-        // Hacemos que la store obtenga los operativos
-        await this.storeOperativos.getOperativos();
-        // Obtenemos los operativos de la store
-        this.listaOperativos = this.storeOperativos.operativos;
-      },
       // Funcion para actualizar el componente despues de actualizar un operativo
       operativoActualizado() {
-        // Conseguimos la lista de operativos actualizada
-        this.getOperativos();
         // Se oculta el menu de edicion de operativo
         this.editar = false;
-        // Llamamos al formulario de añadir operativo para que actualice la lista de misiones
-        this.$refs.añadir.getMisionesPlanificadas();
       },
       // Funcion asincrona para eliminar un operativo de la lista
       async removeOperativo(operativo) {
-        // Hacemos que la store elimine la mision
+        // Hacemos que la store elimine el operativo
         await this.storeOperativos.removeOperativo(operativo);
-        // Conseguimos la lista de operativos actualizada
-        this.getOperativos();
-        // Llamamos al formulario de añadir operativo para que actualice la lista de misiones
-        this.$refs.añadir.getMisionesPlanificadas();
       },
     },
 
-    created: function() {
-      // Obtenemos la lista de operativos
-      this.getOperativos();
+    computed: {
+      // Lista con los operativos
+      listaOperativos() {
+        // Obtenemos los operativos de la store
+        return this.storeOperativos.getterOperativos;
+      }
     }
   }
 </script>

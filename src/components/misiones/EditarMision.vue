@@ -1,6 +1,6 @@
 <template>
     <!-- Cuadro con el formulario -->
-    <v-sheet :elevation="5" style="max-width: 50%; margin-left: 25%;">
+    <v-sheet :elevation="5" style="max-width: 75%; margin-left: 12.5%;">
         <v-form ref="formularioEditar">
             <!-- Campo de texto para la descripcion -->
             <v-text-field v-model=descripcion label="Descripcion" required
@@ -9,12 +9,16 @@
             <v-select label="Operativo" :items="listaOperativos" item-title="nombre" 
             v-model="operativoSeleccionado" return-object clearable>
                 <template v-slot:item="{ props, item }">
-                <v-list-item v-bind="props" :subtitle="item.raw.rol"></v-list-item>
+                    <v-list-item v-bind="props" :subtitle="item.raw.rol"></v-list-item>
                 </template>
             </v-select>
             <!-- Campo de seleccion de equipos -->
             <v-select label="Equipos disponibles" v-model="equiposSeleccionados" :items="equiposDisponiblesSeleccionar"
-            item-title="descripcion" item-value="id" chips multiple return-object />
+            item-title="descripcion" item-value="id" chips multiple return-object>
+                <template v-slot:item="{ props, item }">
+                    <v-list-item v-bind="props" :subtitle="item.raw.tipo"></v-list-item>
+                </template>
+            </v-select>
             <!-- Boton de editar -->
             <v-btn @click=updateMision class="mt-2" block>Editar</v-btn>
         </v-form>
@@ -55,7 +59,7 @@
             // Funcion para rellenar el formulario de edicion con los datos de la mision
             async rellenarFormularioEdicion() {
                 // Obtenemos la mision que queremos editar
-                this.mision = this.storeMisiones.mision;
+                this.mision = this.storeMisiones.getterMision;
 
                 // Cambiamos el valor de la descripcion, operativo y equipos seleccionados del formulario a los de la mision
                 this.descripcion = this.mision.descripcion;
@@ -63,8 +67,8 @@
                 this.equiposSeleccionados = this.mision.equiposDTO;
 
                 // Obtenemos la lista de operativos y de equipos disponibles
-                await this.getOperativos();
-                await this.getEquiposDisponibles();
+                this.getOperativos();
+                this.getEquiposDisponibles();
                 // Cambiamos la lista de equipos disponibles de seleccionar a los seleccionados mas los disponibles
                 this.equiposDisponiblesSeleccionar = this.equiposSeleccionados.concat(this.equiposDisponibles);
             },
@@ -80,19 +84,15 @@
                 }
             },
             // Funcion asincrona para conseguir los operativos
-            async getOperativos() {
-                // Hacemos que la store obtenga los operativos
-                await this.storeOperativos.getOperativos();
+            getOperativos() {
                 // Obtenemos los operativos de la store
-                this.listaOperativos = this.storeOperativos.operativos;
+                this.listaOperativos = this.storeOperativos.getterOperativos;
             },
             // Funcion asincrona para obtener los equipos disponibles
-            async getEquiposDisponibles()
+            getEquiposDisponibles()
             {
-                // Hacemos que la store obtenga los equipos disponibles
-                await this.storeEquipos.getEquiposDisponibles();
-                // Obtenemos los equipos de la store
-                this.equiposDisponibles = this.storeEquipos.equiposDisponibles;
+                // Obtenemos los equipos disponibles de la store
+                this.equiposDisponibles = this.storeEquipos.getterEquiposDisponibles;
             },
         },
 

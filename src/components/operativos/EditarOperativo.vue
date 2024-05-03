@@ -1,6 +1,6 @@
 <template>
     <!-- Cuadro con el formulario -->
-    <v-sheet :elevation="5" style="max-width: 50%; margin-left: 25%;">
+    <v-sheet :elevation="5" style="max-width: 75%; margin-left: 12.5%;">
         <v-form ref="formularioEditar">
             <!-- Campo de texto para el nombre -->
             <v-text-field v-model=nombre label="Nombre" required
@@ -45,8 +45,8 @@
         methods: {
             // Funcion para rellenar el formulario de edicion con los datos del operativo
             async rellenarFormularioEdicion() {
-                // Obtenemos el equipo que queremos editar
-                this.operativo = this.storeOperativos.operativo;
+                // Obtenemos el operativo que queremos editar
+                this.operativo = this.storeOperativos.getterOperativo;
 
                 // Cambiamos el valor del nombre, rol y misiones seleccionadas del menu a las del operativo
                 this.nombre = this.operativo.nombre;
@@ -54,7 +54,7 @@
                 this.misionesSeleccionadas = this.operativo.misionesDTO;
 
                 // Obtenemos las misiones planificadas
-                await this.getMisionesPlanificadas();
+                this.getMisionesPlanificadas();
                 // Cambiamos la lista de misiones disponibles a las del operativo mas las planificadas
                 this.misionesDisponibles = this.misionesSeleccionadas.concat(this.misionesPlanificadas);
             },
@@ -71,12 +71,10 @@
                 }
             },
             // Funcion asincrona para obtener las misiones planificadas
-            async getMisionesPlanificadas()
+            getMisionesPlanificadas()
             {
-                // Hacemos que la store obtenga las misiones planificadas
-                await this.storeMisiones.getMisionesPlanificadas();
                 // Obtenemos las misiones de la store
-                this.misionesPlanificadas = this.storeMisiones.misionesPlanificadas;
+                this.misionesPlanificadas = this.storeMisiones.getterMisionesPlanificadas;
             },
         },
 

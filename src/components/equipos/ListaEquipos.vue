@@ -43,7 +43,7 @@
       </v-col>
       <!-- Formulario para añadir un nuevo equipo -->
       <v-col cols="12" sm="6" md="4" lg="3">
-        <AñadirEquipo @equipo-añadido="getEquipos" />
+        <AñadirEquipo />
       </v-col>
     </v-row>
     <!-- Formulario para editar un equipo, solo se muestra si "editar" es verdadero -->
@@ -55,8 +55,8 @@
 </template>
 
 <script>
-  import AñadirEquipo from "../formularios/AñadirEquipo.vue";
-  import EditarEquipo from "../formularios/EditarEquipo.vue";
+  import AñadirEquipo from "./AñadirEquipo.vue";
+  import EditarEquipo from "./EditarEquipo.vue";
   import { useEquiposStore } from "@/stores/equipos";
 
   export default {
@@ -70,9 +70,6 @@
     data: () => ({
       // Store para los equipos
       storeEquipos: useEquiposStore(),
-
-      // Lista de equipos
-      listaEquipos: [],
 
       // Booleano para abrir el menu de editar equipo
       editar: false,
@@ -97,17 +94,8 @@
         // Llenamos el formulario de editar equipo
         this.$refs.editar.rellenarFormularioEdicion();
       },
-      // Funcion asincrona para conseguir los equipos
-      async getEquipos() {
-        // Hacemos que la store de equipos obtenga los equipos
-        await this.storeEquipos.getEquipos();
-        // Obtenemos los equipos de la store
-        this.listaEquipos = this.storeEquipos.equipos;
-      },
       // Funcion para actualizar el componente despues de actualizar un equipo
       equipoActualizado() {
-        // Conseguimos la lista de equipos actualizada
-        this.getEquipos();
         // Se oculta el menu de edicion de equipo
         this.editar = false;
       },
@@ -115,14 +103,16 @@
       async removeEquipo(equipo) {
         // Hacemos que la store elimine el equipo
         await this.storeEquipos.removeEquipo(equipo);
-        // Conseguimos la lista de equipos actualizada
-        this.getEquipos();
       }
     },
 
-    created: function() {
-      // Obtenemos la lista de equipos
-      this.getEquipos();
+    computed: {
+      // Lista con los equipos
+      listaEquipos() {
+        // Obtenemos los equipos de la store
+        return this.storeEquipos.getterEquipos;
+      }
     }
+
   }
 </script>

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ListaEquipos from '@/components/listas/ListaEquipos.vue'
+import ListaEquipos from '@/components/equipos/ListaEquipos.vue'
 
 export default {
   name: 'EquiposView',

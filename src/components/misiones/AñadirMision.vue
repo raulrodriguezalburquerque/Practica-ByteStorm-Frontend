@@ -14,7 +14,11 @@
             </v-select>
             <!-- Campo de seleccion de equipos -->
             <v-select label="Equipos disponibles" v-model="equiposSeleccionados" :items="equiposDisponibles"
-            item-title="descripcion" item-value="id" chips multiple return-object />
+            item-title="descripcion" item-value="id" chips multiple return-object>
+                <template v-slot:item="{ props, item }">
+                    <v-list-item v-bind="props" :subtitle="item.raw.tipo"></v-list-item>
+                </template>
+            </v-select>
             <!-- Boton de añadir -->
             <v-btn @click=addMision class="mt-2" block>Añadir</v-btn>
         </v-form>
@@ -35,12 +39,6 @@
             storeOperativos: useOperativosStore(),
             storeEquipos: useEquiposStore(),
 
-            // Lista de equipos disponibles
-            equiposDisponibles: [],
-
-            // Lista de operativos
-            listaOperativos: [],
-
             // Descripcion, operativo y equipos seleccionados del formulario
             descripcion: '',
             operativoSeleccionado: null,
@@ -56,35 +54,23 @@
                     // Hacemos que la store añada la nueva mision
                     await this.storeMisiones.addMision(this.descripcion, this.operativoSeleccionado,
                         this.equiposSeleccionados);
-                    // Conseguimos la lista de equipos disponibles actualizada
-                    this.getEquiposDisponibles();
                     // Reseteamos el formulario
                     this.$refs.formularioAñadir.reset();
-                    // Emitimos un evento para que el componente padre se actualice
-                    this.$emit('mision-añadida');
                 }
-            },
-            // Funcion asincrona para conseguir los operativos
-            async getOperativos() {
-                // Hacemos que la store obtenga los operativos
-                await this.storeOperativos.getOperativos();
-                // Obtenemos los operativos de la store
-                this.listaOperativos = this.storeOperativos.operativos;
-            },
-            // Funcion asincrona para obtener los equipos disponibles
-            async getEquiposDisponibles()
-            {
-                // Hacemos que la store obtenga los equipos disponibles
-                await this.storeEquipos.getEquiposDisponibles();
-                // Obtenemos los equipos de la store
-                this.equiposDisponibles = this.storeEquipos.equiposDisponibles;
             }
         },
 
-        created: function() {
-            // Obtenemos la lista de operativos y equipos disponibles
-            this.getOperativos();
-            this.getEquiposDisponibles();
+        computed: {
+            // Lista con los operativos
+            listaOperativos() {
+                // Obtenemos los operativos de la store
+                return this.storeOperativos.getterOperativos;
+            },
+            // Lista con los equipos disponibles
+            equiposDisponibles() {
+                // Obtenemos los equipos disponibles de la store
+                return this.storeEquipos.getterEquiposDisponibles;
+            }
         }
     }
 </script>

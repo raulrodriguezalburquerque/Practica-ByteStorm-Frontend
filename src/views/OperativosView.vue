@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ListaOperativos from '@/components/listas/ListaOperativos.vue';
+import ListaOperativos from '@/components/operativos/ListaOperativos.vue';
 
 export default {
   name: 'OperativosView',
