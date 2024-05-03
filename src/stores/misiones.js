@@ -66,6 +66,15 @@ export const useMisionesStore = defineStore('misiones', {
             }).then(response => { console.log(response); })
             .catch(error => { console.log(error); });
         },
+        // Funcion asincrona para completar una mision de la lista
+        async completarMision(mision) {
+            // Obtenemos el codigo de la mision
+            var code = mision.codigo;
+            // Hacemos la llamada HTTP PUT para completar la mision
+            await axios.put("https://localhost:7057/api/Misiones/Completar/"+code)
+                .then(response => { console.log(response); })
+                .catch(error => { console.log(error); });
+        },
         // Funcion asincrona para eliminar una mision de la lista
         async removeMision(mision) {
             // Obtenemos el codigo de la mision

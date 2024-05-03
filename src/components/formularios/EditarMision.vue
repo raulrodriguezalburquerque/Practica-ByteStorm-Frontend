@@ -14,7 +14,7 @@
             </v-select>
             <!-- Campo de seleccion de equipos -->
             <v-select label="Equipos disponibles" v-model="equiposSeleccionados" :items="equiposDisponiblesSeleccionar"
-            item-title="descripcion" chips multiple return-object />
+            item-title="descripcion" item-value="id" chips multiple return-object />
             <!-- Boton de editar -->
             <v-btn @click=updateMision class="mt-2" block>Editar</v-btn>
         </v-form>

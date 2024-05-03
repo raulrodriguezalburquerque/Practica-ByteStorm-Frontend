@@ -36,7 +36,8 @@
           </v-card-item>
           <!-- Texto de la carta -->
           <v-card-text class="bg-light-blue-lighten-4 pt-4">
-            {{ equipo.estado }}
+            <p v-if="equipo.misionDTO != null">{{ equipo.estado }} - {{ equipo.misionDTO.descripcion }}</p>
+            <p v-else>{{ equipo.estado }}</p>
           </v-card-text>
         </v-card>
       </v-col>

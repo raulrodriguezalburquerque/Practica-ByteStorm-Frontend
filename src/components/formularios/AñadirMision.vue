@@ -9,12 +9,12 @@
             <v-select label="Operativo" :items="listaOperativos" item-title="nombre" 
             v-model="operativoSeleccionado" return-object clearable>
                 <template v-slot:item="{ props, item }">
-                <v-list-item v-bind="props" :subtitle="item.raw.rol"></v-list-item>
+                    <v-list-item v-bind="props" :subtitle="item.raw.rol"></v-list-item>
                 </template>
             </v-select>
             <!-- Campo de seleccion de equipos -->
             <v-select label="Equipos disponibles" v-model="equiposSeleccionados" :items="equiposDisponibles"
-            item-title="descripcion" chips multiple return-object />
+            item-title="descripcion" item-value="id" chips multiple return-object />
             <!-- Boton de añadir -->
             <v-btn @click=addMision class="mt-2" block>Añadir</v-btn>
         </v-form>

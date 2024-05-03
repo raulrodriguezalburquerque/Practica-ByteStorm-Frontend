@@ -10,6 +10,7 @@
             <v-row>
               <v-col cols="9">
                 <v-card-title>{{ operativo.nombre }}</v-card-title>
+                <v-card-subtitle>{{ operativo.rol }}</v-card-subtitle>
               </v-col>
               <v-col cols="3" class="d-flex align-center justify-end">
                 <!-- Menu -->
@@ -35,8 +36,6 @@
           </v-card-item>
           <!-- Texto de la carta -->
           <v-card-text class="bg-light-blue-lighten-4 pt-4">
-            {{ operativo.rol }}
-            <v-divider class="my-2" />
             <!-- Panel expandible con misiones asignadas si el operativo tiene asignada alguna -->
             <v-expansion-panels v-if="operativo.misionesDTO != null && operativo.misionesDTO.length > 0">
               <v-expansion-panel title="Misiones asignadas">

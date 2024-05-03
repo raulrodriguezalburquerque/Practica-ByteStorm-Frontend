@@ -10,7 +10,7 @@
             :rules="[value => value && value.length >= 1 || 'Es obligatorio rellenar este campo']" />
             <!-- Campo de seleccion de misiones -->
             <v-select label="Misiones disponibles" v-model="misionesSeleccionadas" :items="misionesDisponibles"
-            item-title="descripcion" chips multiple return-object />
+            item-title="descripcion" item-value="codigo" chips multiple return-object />
             <!-- Boton de editar -->
             <v-btn @click="updateOperativo" class="mt-2" block>Editar</v-btn>
         </v-form>

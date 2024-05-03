@@ -10,6 +10,7 @@
             <v-row>
               <v-col cols="9">
                 <v-card-title>{{ mision.descripcion }}</v-card-title>
+                <v-card-subtitle>{{ mision.estado }}</v-card-subtitle>
               </v-col>
               <v-col cols="3" class="d-flex align-center justify-end">
                 <!-- Menu -->
@@ -18,12 +19,24 @@
                   <template v-slot:activator="{ props }">
                     <v-btn v-bind="props" icon="mdi-menu" class="bg-light-blue-darken-4" flat />
                   </template>
-                  <!-- Lista de botones del menu -->
-                  <v-list>
+                  <!-- Lista de botones del menu, en funcion del estado -->
+                  <!-- Lista con todas las opciones para una mision completar -->
+                  <v-list v-if="mision.estado != 'Completada'">
                     <!-- Boton para editar la mision -->
                     <v-list-item @click="mostrarFormularioEditar(mision)">
                       <v-list-item-title>Editar</v-list-item-title>
                     </v-list-item>
+                    <!-- Boton para completar la mision -->
+                    <v-list-item @click="completarMision(mision)">
+                      <v-list-item-title>Completar</v-list-item-title>
+                    </v-list-item>
+                    <!-- Boton para eliminar la mision -->
+                    <v-list-item @click="removeMision(mision)">
+                      <v-list-item-title>Eliminar</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                  <!-- Lista con la opcion de eliminar para una mision completada -->
+                  <v-list v-else>
                     <!-- Boton para eliminar la mision -->
                     <v-list-item @click="removeMision(mision)">
                       <v-list-item-title>Eliminar</v-list-item-title>
@@ -34,10 +47,7 @@
             </v-row>
           </v-card-item>
           <!-- Texto de la carta -->
-          <v-card-text class="bg-light-blue-lighten-4 pt-4">
-            <!-- Descripcion de la mision -->
-            {{ mision.estado }}
-            <v-divider class="my-2" />
+          <v-card-text v-if="mision.estado != 'Completada'" class="bg-light-blue-lighten-4 pt-4">
             <!-- Nombre y rol del operativo si la mision tiene asignado uno, si no mensaje que lo indique -->
             <p v-if="mision.operativoDTO != null"> {{ mision.operativoDTO.nombre }} - {{ mision.operativoDTO.rol }} </p>
             <p v-else> Operativo no asignado </p>
@@ -131,6 +141,15 @@
         this.getMisiones();
         // Se oculta el menu de edicion de mision
         this.editar = false;
+        // Llamamos al formulario de añadir mision para que actualice la lista de equipos disponibles
+        this.$refs.añadir.getEquiposDisponibles();
+      },
+      // Funcion asincrona para completar una mision de la lista
+      async completarMision(mision) {
+        // Hacemos que la store de por completada la mision
+        await this.storeMisiones.completarMision(mision);
+        // Conseguimos la lista de misiones actualizada
+        this.getMisiones();
         // Llamamos al formulario de añadir mision para que actualice la lista de equipos disponibles
         this.$refs.añadir.getEquiposDisponibles();
       },

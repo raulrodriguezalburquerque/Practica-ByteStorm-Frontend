@@ -33,23 +33,33 @@
 </template>
 
 <script>
+    import { watchEffect } from 'vue';
+
     export default {
         name: 'HeaderComponent',
+
         data: () => ({
             // Booleano para saber si mostramos la barra o el menu lateral de navegacion
             toolBarView: true,
             // Booleano para abrir y cerrar el menu de navegacion
             navDrawer: false
         }),
+
         methods: {
             // Funcion para comprobar el tamaño de pantalla y decidir que tipo de navegacion usar
             comprobarTamañoPantalla() {
                 this.toolBarView = window.innerWidth >= 760;
-            },
+            }
         },
+
         created: function() {
-            // Comprobamos el tamaño de pantalla
+            // Comprobamos el tamaño de pantalla inicial
             this.comprobarTamañoPantalla();
+            // Se añade un observador para que se compruebe el pantalla de pantalla al cambiar
+            watchEffect(() => {
+                window.addEventListener('resize', this.comprobarTamañoPantalla);
+                return () => window.removeEventListener('resize', this.comprobarTamañoPantalla);
+            });
         }
     }
 </script>

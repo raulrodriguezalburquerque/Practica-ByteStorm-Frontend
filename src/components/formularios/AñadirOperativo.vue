@@ -10,7 +10,7 @@
             :rules="[value => value && value.length >= 1 || 'Es obligatorio rellenar este campo']" />
             <!-- Campo de seleccion de misiones -->
             <v-select label="Misiones planificadas" v-model="misionesSeleccionadas" :items="misionesPlanificadas"
-            item-title="descripcion" chips multiple return-object />
+            item-title="descripcion" item-value="codigo" chips multiple return-object />
             <!-- Boton de añadir -->
             <v-btn @click=addOperativo class="mt-2" block>Añadir</v-btn>
         </v-form>
@@ -62,6 +62,10 @@
                 // Obtenemos las misiones de la store
                 this.misionesPlanificadas = this.storeMisiones.misionesPlanificadas;
             },
+            getCodigo(mision)
+            {
+                return mision.codigo;
+            }
         },
 
         created: function() {
