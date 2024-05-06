@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useMisionesStore } from "@/stores/misiones"
-import axios from "axios";
+import { getEquiposAxios, getEquipoAxios, addEquipoAxios, updateEquipoAxios, removeEquipoAxios } from "@/api-calls/axios-equipos"
 
 export const useEquiposStore = defineStore('equipos', {
     // Datos de la store
@@ -23,12 +23,8 @@ export const useEquiposStore = defineStore('equipos', {
     actions: {
         // Funcion asincrona para conseguir los equipos
         async getEquipos() {
-            // Hacemos la llamada HTTP GET para obtener la lista de equipos
-            await axios.get("https://localhost:7057/api/Equipos")
-                .then(response => { console.log(response);
-                // Actualizamos la lista de equipos con la respuesta obtenida
-                this.equipos = response.data;
-            })
+            // Actualizamos la lista de equipos con los obtenidos con la llamada a la API
+            this.equipos = await getEquiposAxios();
         },
         // Funcion asincrona para conseguir un equipo segun el ID
         async getEquipo(id) {
@@ -39,57 +35,34 @@ export const useEquiposStore = defineStore('equipos', {
                 this.equipo = equipo;
             // Realizamos la llamada HTTP para obtener el equipo
             else
-                // Hacemos la llamada HTTP GET para obtener el equipo
-                await axios.get("https://localhost:7057/api/Equipos/"+id)
-                .then(response => { console.log(response);
-                    // Actualizamos el equipo con la respuesta obtenida
-                    this.equipo = response.data;
-                })
+                // Actualizamos el equipo con la respuesta obtenida
+                this.equipo = await getEquipoAxios;
         },
         // Funcion asincrona para añadir un equipo a la lista
         async addEquipo(tipo, descripcion) {
-            // Hacemos la llamada HTTP POST creando el nuevo equipo
-            await axios.post("https://localhost:7057/api/Equipos", {
-                tipo: tipo,
-                descripcion: descripcion,
-                estado: "Disponible"
-            }).then(response => { console.log(response); 
-                // Añadimos el equipo creado al array
-                this.equipos.push(response.data);
-            })
-            .catch(error => { console.log(error); });
+            // Añadimos el equipo creado al array
+            this.equipos.push(await addEquipoAxios(tipo, descripcion));
         },
         // Funcion asincrona para actualizar un equipo
         async updateEquipo(equipo, tipo, descripcion) {
-            // Obtenemos el ID del equipo
-            var id = equipo.id;
-            // Hacemos la llamada HTTP PUT para actualizar el equipo
-            await axios.put("https://localhost:7057/api/Equipos/"+id, {
-                ID: id,
-                tipo: tipo,
-                descripcion: descripcion,
-                estado: equipo.estado,
-                misionDTO: equipo.misionDTO
-            }).then(async (response) => { console.log(response); 
+            // Si podemos actualizar el equipo, actualizamos las stores
+            if(await updateEquipoAxios(equipo, tipo, descripcion))
+            {
                 // Actualizamos la store de equipos y misiones
                 await this.getEquipos();
                 await useMisionesStore().getMisiones();
-            })
-            .catch(error => { console.log(error); });
+            }
         },
         // Funcion asincrona para eliminar un equipo de la lista
         async removeEquipo(equipo) {
-            // Obtenemos el id del equipo
-            var id = equipo.id;
-            // Hacemos la llamada HTTP DELETE para eliminar el equipo
-            await axios.delete("https://localhost:7057/api/Equipos/"+id)
-                .then(async (response) => { console.log(response); 
-                    // Filtramos el equipo eliminado del array
-                    this.equipos = this.equipos.filter(e => e.id != id);
-                    // Actualizamos la store de misiones
-                    await useMisionesStore().getMisiones();
-                })
-                .catch(error => { console.log(error); });
+            // Si podemos eliminar el equipo, actualizamos las stores
+            if(await removeEquipoAxios(equipo))
+            {
+                // Filtramos el equipo eliminado del array
+                this.equipos = this.equipos.filter(e => e.id != equipo.id);
+                // Actualizamos la store de misiones
+                await useMisionesStore().getMisiones();
+            }
         }
     }
 })

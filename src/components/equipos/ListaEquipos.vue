@@ -1,6 +1,8 @@
 <template>
   <v-container fluid>
     <v-row no-gutters>
+      <!-- Titulo para lista de equipos -->
+      <p class="text-h4 w-100 ma-2 mb-4" style="color: #00BFA5;">Equipos</p>
       <!-- Recorremos la lista de equipos -->
       <v-col v-for="equipo in listaEquipos" :key="equipo.ID" cols="12" sm="6" md="4" lg="3">
         <!-- Creamos una carta por equipo -->
@@ -48,71 +50,63 @@
     </v-row>
     <!-- Formulario para editar un equipo, solo se muestra si "editar" es verdadero -->
     <v-dialog v-model="editar">
-      <EditarEquipo ref="editar" @form-mounted="rellenarFormularioEditarEquipo(equipoEditar)"
-        @equipo-actualizado="equipoActualizado" />
+      <EditarEquipo ref="formularioEditar" @form-mounted="rellenarFormularioEditarEquipo(equipoEditar)"
+        @cerrar-edicion="cerrarFormularioEdicion" />
     </v-dialog>
   </v-container>
 </template>
 
-<script>
+<script setup>
+  import { ref, computed } from 'vue'
   import AñadirEquipo from "./AñadirEquipo.vue";
   import EditarEquipo from "./EditarEquipo.vue";
   import { useEquiposStore } from "@/stores/equipos";
 
-  export default {
-    name: 'ListaEquipos',
-  
-    components: {
-      AñadirEquipo,
-      EditarEquipo
-    },
+  // Store para los equipos
+  const storeEquipos = useEquiposStore()
 
-    data: () => ({
-      // Store para los equipos
-      storeEquipos: useEquiposStore(),
+  // Booleano para abrir el menu de editar equipo
+  const editar = ref(false)
+  // Equipo que editar
+  const equipoEditar = ref(null)
 
-      // Booleano para abrir el menu de editar equipo
-      editar: false,
-      // Equipo que editar
-      equipoEditar: null,
-    }),
+  // Formulario de edicion
+  const formularioEditar = ref(null)
 
-    methods: {
-      // Funcion para mostrar el formulario de editar equipo
-      mostrarFormularioEditar(equipo) {
-        // Se guarda el equipo que queremos editar
-        this.equipoEditar = equipo;
-        // Se muestra el formulario
-        this.editar = true;
-      },
-      // Funcion para rellenar el formulario de editar equipo con sus datos
-      async rellenarFormularioEditarEquipo(equipo) {
-        // Obtenemos el ID del equipo que queremos editar
-        var id = equipo.id;
-        // La store busca el equipo
-        await this.storeEquipos.getEquipo(id);
-        // Llenamos el formulario de editar equipo
-        this.$refs.editar.rellenarFormularioEdicion();
-      },
-      // Funcion para actualizar el componente despues de actualizar un equipo
-      equipoActualizado() {
-        // Se oculta el menu de edicion de equipo
-        this.editar = false;
-      },
-      // Funcion asincrona para eliminar un equipo de la lista
-      async removeEquipo(equipo) {
-        // Hacemos que la store elimine el equipo
-        await this.storeEquipos.removeEquipo(equipo);
-      }
-    },
+  // Lista con los equipos
+  const listaEquipos = computed(() => {
+    // Obtenemos los equipos de la store
+    return storeEquipos.getterEquipos;
+  })
 
-    computed: {
-      // Lista con los equipos
-      listaEquipos() {
-        // Obtenemos los equipos de la store
-        return this.storeEquipos.getterEquipos;
-      }
-    }
-
+  // Funcion para mostrar el formulario de editar equipo
+  function mostrarFormularioEditar(equipo) {
+    // Se guarda el equipo que queremos editar
+    equipoEditar.value = equipo;
+    // Se muestra el formulario
+    editar.value = true;
   }
+
+  // Funcion para rellenar el formulario de editar equipo con sus datos
+  async function rellenarFormularioEditarEquipo(equipo) {
+    // Obtenemos el ID del equipo que queremos editar
+    var id = equipo.id;
+    // La store busca el equipo
+    await storeEquipos.getEquipo(id);
+    // Llenamos el formulario de editar equipo
+    formularioEditar.value.rellenarFormularioEdicion();
+  }
+
+  // Funcion para cerrar el formulario de edicion
+  function cerrarFormularioEdicion() {
+    // Se oculta el menu de edicion de equipo
+    editar.value = false;
+  }
+
+  // Funcion asincrona para eliminar un equipo de la lista
+  async function removeEquipo(equipo) {
+    // Hacemos que la store elimine el equipo
+    await storeEquipos.removeEquipo(equipo);
+  }
+
 </script>

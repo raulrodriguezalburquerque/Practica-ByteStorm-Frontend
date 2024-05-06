@@ -9,41 +9,38 @@
             <v-text-field v-model=descripcion label="Descripcion" required class="my-2"
             :rules="[value => value && value.length >= 1 || 'Es obligatorio rellenar este campo']" />
             <!-- Boton de añadir -->
-            <v-btn @click=addEquipo class="mt-2" block>Añadir</v-btn>
+            <v-btn @click="addEquipo" class="mt-2" block>Añadir</v-btn>
         </v-form>
     </v-sheet>
 </template>
 
-<script>
+<script setup>
+    import { ref } from 'vue'
     import { useEquiposStore } from "@/stores/equipos";
 
-    export default {
-        name: 'AñadirEquipo',
+    // Store para los equipos
+    const storeEquipos = useEquiposStore()
 
-        data: () => ({
-            // Store para los equipos
-            store: useEquiposStore(),
+    // Tipos de equipo posibles
+    const tiposSeleccionables = ref(["Hardware", "Software"])
 
-            // Tipos de equipo posibles
-            tiposSeleccionables: ["Hardware", "Software"],
-            
-            // Descripcion y tipo dentro del formulario de añadir equipo
-            tipo: '',
-            descripcion: ''
-        }),
+    // Descripcion y tipo dentro del formulario de añadir equipo
+    const tipo = ref('')
+    const descripcion = ref('')
 
-        methods: {
-            // Funcion para añadir un equipo a la lista
-            async addEquipo() {
-                // Comprobamos si el formulario de añadir equipo se ha rellenado correctamente
-                const { valid } = await this.$refs.formularioAñadir.validate();
-                if(valid) {
-                    // La store de equipos añade el nuevo equipo
-                    await this.store.addEquipo(this.tipo, this.descripcion);
-                    // Reseteamos el formulario
-                    this.$refs.formularioAñadir.reset();
-                }
-            }
+    // Formulario
+    const formularioAñadir = ref(null)
+
+    // Funcion para añadir un equipo a la lista
+    async function addEquipo() {
+        // Comprobamos si el formulario de añadir equipo se ha rellenado correctamente
+        const { valid } = await formularioAñadir.value.validate();
+        if(valid) {
+            // La store de equipos añade el nuevo equipo
+            await storeEquipos.addEquipo(tipo.value, descripcion.value);
+            // Reseteamos el formulario
+            formularioAñadir.value.reset();
         }
     }
+
 </script>

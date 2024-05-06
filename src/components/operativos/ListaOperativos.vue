@@ -1,6 +1,8 @@
 <template>
   <v-container fluid grid-list-md>
     <v-row no-gutters>
+      <!-- Titulo para lista de operativos -->
+      <p class="text-h4 w-100 ma-2 mb-4" style="color: #00BFA5;">Operativos</p>
       <!-- Recorremos la lista de operativos -->
       <v-col v-for="operativo in listaOperativos" :key="operativo.ID" cols="12" sm="6" md="4" lg="3">
         <!-- Creamos una carta por operativo -->

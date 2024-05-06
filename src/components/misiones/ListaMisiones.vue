@@ -1,9 +1,11 @@
 <template>
   <v-container fluid grid-list-md>
     <v-row no-gutters>
+      <!-- Titulo para misiones pendientes -->
+      <p class="text-h4 w-100 ma-2 mb-4" style="color: #00BFA5;">Misiones pendientes</p>
       <!-- Recorremos la lista de misones -->
-      <v-col v-for="mision in listaMisiones" :key="mision.codigo" cols="12" sm="6" md="4" lg="3">
-        <!-- Creamos una carta por mision -->
+      <v-col v-for="mision in misionesPendientes" :key="mision.codigo" cols="12" sm="6" md="4" lg="3">
+        <!-- Creamos una carta por cada mision pendiente -->
         <v-card class="ma-2">
           <!-- Titulo y menu de la carta -->
           <v-card-item class="bg-light-blue-darken-4">
@@ -19,9 +21,8 @@
                   <template v-slot:activator="{ props }">
                     <v-btn v-bind="props" icon="mdi-menu" class="bg-light-blue-darken-4" flat />
                   </template>
-                  <!-- Lista de botones del menu, en funcion del estado -->
-                  <!-- Lista con todas las opciones para una mision completar -->
-                  <v-list v-if="mision.estado != 'Completada'">
+                  <!-- Lista de botones del menu para mision pendiente -->
+                  <v-list>
                     <!-- Boton para editar la mision -->
                     <v-list-item @click="mostrarFormularioEditar(mision)">
                       <v-list-item-title>Editar</v-list-item-title>
@@ -35,19 +36,12 @@
                       <v-list-item-title>Eliminar</v-list-item-title>
                     </v-list-item>
                   </v-list>
-                  <!-- Lista con la opcion de eliminar para una mision completada -->
-                  <v-list v-else>
-                    <!-- Boton para eliminar la mision -->
-                    <v-list-item @click="removeMision(mision)">
-                      <v-list-item-title>Eliminar</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
                 </v-menu>
               </v-col>
             </v-row>
           </v-card-item>
           <!-- Texto de la carta -->
-          <v-card-text v-if="mision.estado != 'Completada'" class="bg-light-blue-lighten-4 pt-4">
+          <v-card-text class="bg-light-blue-lighten-4 pt-4">
             <!-- Nombre y rol del operativo si la mision tiene asignado uno, si no mensaje que lo indique -->
             <p v-if="mision.operativoDTO != null"> {{ mision.operativoDTO.nombre }} - {{ mision.operativoDTO.rol }} </p>
             <p v-else> Operativo no asignado </p>
@@ -72,6 +66,41 @@
       <v-col cols="12" sm="6" md="4" lg="3">
         <AñadirMision />
       </v-col>
+
+      <!-- Titulo para misiones completadas -->
+      <p class="text-h4 w-100 ma-2 mt- mb-4" style="color: #00BFA5;">Misiones completadas</p>
+      <!-- Recorremos la lista de misones -->
+      <v-col v-for="mision in misionesCompletadas" :key="mision.codigo" cols="12" sm="6" md="4" lg="3">
+        <!-- Creamos una carta por cada mision completada -->
+        <v-card class="ma-2">
+          <!-- Titulo y menu de la carta -->
+          <v-card-item class="bg-light-blue-darken-4">
+            <v-row>
+              <v-col cols="9">
+                <v-card-title>{{ mision.descripcion }}</v-card-title>
+                <v-card-subtitle>{{ mision.estado }}</v-card-subtitle>
+              </v-col>
+              <v-col cols="3" class="d-flex align-center justify-end">
+                <!-- Menu -->
+                <v-menu>
+                  <!-- Boton para abrir el menu -->
+                  <template v-slot:activator="{ props }">
+                    <v-btn v-bind="props" icon="mdi-menu" class="bg-light-blue-darken-4" flat />
+                  </template>
+                  <!-- Lista con la opcion de eliminar para una mision completada -->
+                  <v-list>
+                    <!-- Boton para eliminar la mision -->
+                    <v-list-item @click="removeMision(mision)">
+                      <v-list-item-title>Eliminar</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-col>
+            </v-row>
+          </v-card-item>
+        </v-card>
+      </v-col>
+
       <!-- Formulario para editar una mision, solo se muestra si "editar" es verdadero -->
       <v-dialog v-model="editar">
         <EditarMision ref="editar" @form-mounted="rellenarFormularioEditarMision(misionEditar)"
@@ -147,6 +176,16 @@
       listaMisiones() {
         // Obtenemos las misiones de la store
         return this.storeMisiones.getterMisiones;
+      },
+      // Lista con las misiones pendientes
+      misionesPendientes() {
+        // Filtramos las misiones que no esten completadas
+        return this.listaMisiones.filter(m => m.estado != "Completada");
+      },
+      // Lista con las misiones completadas
+      misionesCompletadas() {
+        // Filtramos las misiones completadas
+        return this.listaMisiones.filter(m => m.estado == "Completada");
       }
     }
   }
